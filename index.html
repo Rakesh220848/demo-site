@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIRROR-VERSE | IGNITE Treasure Hunt</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            font-family: 'Rajdhani', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .orbitron {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .mirror-text {
+            transform: scaleX(-1);
+            display: inline-block;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+
+        .glitch-text {
+            position: relative;
+            animation: glitch 3s infinite;
+        }
+
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); text-shadow: 2px -2px #ff00de, -2px 2px #00ffff; }
+            40% { transform: translate(-2px, -2px); text-shadow: -2px 2px #ff00de, 2px -2px #00ffff; }
+            60% { transform: translate(2px, 2px); text-shadow: 2px 2px #ff00de, -2px -2px #00ffff; }
+            80% { transform: translate(2px, -2px); text-shadow: -2px -2px #ff00de, 2px 2px #00ffff; }
+        }
+
+        .shimmer {
+            background: linear-gradient(90deg, 
+                rgba(255,255,255,0.1) 0%, 
+                rgba(255,255,255,0.3) 50%, 
+                rgba(255,255,255,0.1) 100%);
+            background-size: 200% 100%;
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        .pulse-glow {
+            animation: pulseGlow 2s infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(236, 72, 153, 0.8); }
+        }
+
+        .float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .reflection {
+            position: relative;
+        }
+
+        .reflection::after {
+            content: attr(data-text);
+            position: absolute;
+            left: 0;
+            top: 100%;
+            transform: scaleY(-1);
+            opacity: 0.2;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.3), transparent);
+            -webkit-background-clip: text;
+            background-clip: text;
+            pointer-events: none;
+        }
+
+        .btn-mirror {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .btn-mirror::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-mirror:hover::before {
+            left: 100%;
+        }
+
+        .btn-mirror:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(139, 92, 246, 0.6);
+        }
+
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+            background: rgba(15, 12, 41, 0.8);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .scroll-fade {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .scroll-fade.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .grid-pattern {
+            background-image: 
+                linear-gradient(rgba(139, 92, 246, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(139, 92, 246, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        .rule-card {
+            transition: all 0.3s ease;
+        }
+
+        .rule-card:hover {
+            transform: translateX(10px);
+            border-color: rgba(236, 72, 153, 0.5);
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -25px;
+            top: 0;
+            width: 2px;
+            height: 100%;
+            background: linear-gradient(to bottom, #a855f7, #ec4899);
+        }
+
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: -33px;
+            top: 8px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #a855f7;
+            border: 3px solid #0f0c29;
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.8);
+        }
+    </style>
+</head>
+<body class="text-white">
+
+    <!-- Navigation -->
+    <nav class="py-4">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <h1 class="text-2xl font-bold orbitron">
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">IGNITE</span>
+                </h1>
+                <span class="text-gray-400">|</span>
+                <span class="text-lg orbitron mirror-text text-purple-300">ESREV-RORRIM</span>
+            </div>
+            <div class="hidden md:flex space-x-6">
+                <a href="#about" class="hover:text-purple-400 transition">About</a>
+                <a href="#rules" class="hover:text-pink-400 transition">Rules</a>
+                <a href="#how-to-play" class="hover:text-purple-400 transition">How to Play</a>
+                <a href="#prizes" class="hover:text-pink-400 transition">Prizes</a>
+                <a href="#register" class="hover:text-purple-400 transition">Register</a>
+            </div>
+            <button class="md:hidden text-purple-400" onclick="toggleMenu()">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-gray-900 bg-opacity-90 py-4">
+            <div class="container mx-auto px-4 flex flex-col space-y-3">
+                <a href="#about" class="hover:text-purple-400 transition">About</a>
+                <a href="#rules" class="hover:text-pink-400 transition">Rules</a>
+                <a href="#how-to-play" class="hover:text-purple-400 transition">How to Play</a>
+                <a href="#prizes" class="hover:text-pink-400 transition">Prizes</a>
+                <a href="#register" class="hover:text-purple-400 transition">Register</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="min-h-screen flex items-center justify-center pt-20 px-4 grid-pattern relative">
+        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-purple-900/10 to-transparent"></div>
+        <div class="container mx-auto text-center relative z-10">
+            <div class="float">
+                <h1 class="text-6xl md:text-8xl font-black orbitron mb-6 glitch-text">
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400">
+                        MIRROR-VERSE
+                    </span>
+                </h1>
+                <div class="text-xl md:text-3xl text-gray-300 mb-4 flex items-center justify-center space-x-3">
+                    <span>A Treasure Hunt Like</span>
+                    <span class="mirror-text text-purple-400">oN rehtO</span>
+                </div>
+                <p class="text-lg md:text-xl text-pink-400 mb-8 orbitron">Part of IGNITE 2024</p>
+            </div>
+            
+            <div class="glass-panel rounded-2xl p-8 max-w-3xl mx-auto mb-8 pulse-glow">
+                <p class="text-xl md:text-2xl text-gray-200 mb-4">
+                    "In a world where nothing is as it seems, only those who see beyond reflections will find the truth."
+                </p>
+                <p class="text-purple-300">🔍 Solve puzzles. Decode clues. Uncover secrets. 🔍</p>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <a href="#register" class="btn-mirror bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-lg text-lg font-bold orbitron">
+                    Register Now
+                </a>
+                <a href="#how-to-play" class="btn-mirror bg-gray-800 border-2 border-purple-500 text-white px-8 py-4 rounded-lg text-lg font-bold orbitron">
+                    Learn More
+                </a>
+            </div>
+
+            <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                <div class="glass-panel rounded-xl p-6 shimmer">
+                    <div class="text-4xl mb-3">⏱️</div>
+                    <h3 class="text-xl font-bold text-purple-400 mb-2">Duration</h3>
+                    <p class="text-gray-300">2 Hours of Mind-Bending Challenges</p>
+                </div>
+                <div class="glass-panel rounded-xl p-6 shimmer" style="animation-delay: 0.3s;">
+                    <div class="text-4xl mb-3">👥</div>
+                    <h3 class="text-xl font-bold text-pink-400 mb-2">Team Size</h3>
+                    <p class="text-gray-300">2-4 Members Per Team</p>
+                </div>
+                <div class="glass-panel rounded-xl p-6 shimmer" style="animation-delay: 0.6s;">
+                    <div class="text-4xl mb-3">🏆</div>
+                    <h3 class="text-xl font-bold text-purple-400 mb-2">Prizes</h3>
+                    <p class="text-gray-300">Exciting Rewards Await!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-20 px-4 bg-gradient-to-b from-transparent to-purple-900/20">
+        <div class="container mx-auto max-w-6xl">
+            <div class="scroll-fade">
+                <h2 class="text-5xl md:text-6xl font-black orbitron text-center mb-12">
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-400">What is MIRROR-VERSE?</span>
+                </h2>
+                
+                <div class="glass-panel rounded-3xl p-8 md:p-12 mb-8">
+                    <p class="text-xl text-gray-200 leading-relaxed mb-6">
+                        MIRROR-VERSE is an immersive treasure hunt experience where reality meets reflection. As part of <span class="text-purple-400 font-bold">IGNITE 2024</span>, this event challenges teams to navigate through a series of cryptic clues, mirrored messages, and mind-bending puzzles scattered across the campus.
+                    </p>
+                    <p class="text-xl text-gray-200 leading-relaxed mb-6">
+                        Every clue is a doorway to another dimension. Every reflection hides a secret. Teams must decode encrypted messages, solve riddles, and think in reverse to progress through the hunt.
+                    </p>
+                    <div class="bg-gradient-to-r from-purple-900/30 to-pink-900/30 rounded-xl p-6 border-l-4 border-purple-500">
+                        <p class="text-lg text-purple-200">
+                            <span class="text-2xl">💡</span> <strong>The Concept:</strong> In the Mirror-Verse, nothing is straightforward. Text appears reversed, numbers hide letters, and the path forward often requires looking backward. Only those who can see beyond the obvious will claim victory.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="glass-panel rounded-2xl p-6 border-l-4 border-purple-500">
+                        <h3 class="text-2xl font-bold text-purple-400 mb-4 orbitron">🎯 Event Highlights</h3>
+                        <ul class="space-y-3 text-gray-200">
+                            <li class="flex items-start">
+                                <span class="text-pink-400 mr-2">▸</span>
+                                <span>Campus-wide treasure hunt with 10+ checkpoints</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-pink-400 mr-2">▸</span>
+                                <span>Unique mirror-themed puzzles and ciphers</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-pink-400 mr-2">▸</span>
+                                <span>Physical and digital clue integration</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-pink-400 mr-2">▸</span>
+                                <span>Real-time leaderboard tracking</span>
+                            </li>
+                            <li class="flex items-start">
+                                <span class="text-pink-400 mr-2">▸</span>
+                                <span>Interactive challenges at each checkpoint</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="glass-panel rounded-2xl p-6 border-l-4 border-pink-500">
+                        <h3 class="text-2xl font-bold text-pink-400 mb-4 orbitron">📅 Event Details</h3>
+                        <div class="space-y-4 text-gray-200">
+                            <div class="flex justify-between items-center border-b border-gray-700 pb-3">
+                                <span class="font-semibold">Date:</span>
+                                <span class="text-purple-300">TBA</span>
+                            </div>
+                            <div class="flex justify-between items-center border-b border-gray-700 pb-3">
+                                <span class="font-semibold">Time:</span>
+                                <span class="text-purple-300">10:00 AM - 12:00 PM</span>
+                            </div>
+                            <div class="flex justify-between items-center border-b border-gray-700 pb-3">
+                                <span class="font-semibold">Venue:</span>
+                                <span class="text-purple-300">College Campus</span>
+                            </div>
+                            <div class="flex justify-between items-center border-b border-gray-700 pb-3">
+                                <span class="font-semibold">Entry Fee:</span>
+                                <span class="text-purple-300">₹50 per team</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="font-semibold">Registration Deadline:</span>
+                                <span class="text-pink-300">TBA</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Rules Section -->
+    <section id="rules" class="py-20 px-4">
+        <div class="container mx-auto max-w-6xl">
+            <div class="scroll-fade">
+                <h2 class="text-5xl md:text-6xl font-black orbitron text-center mb-12">
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">Rules & Regulations</span>
+                </h2>
+
+                <div class="grid md:grid-cols-2 gap-8 mb-8">
+                    <!-- Do's -->
+                    <div class="glass-panel rounded-2xl p-8">
+                        <div class="flex items-center mb-6">
+                            <div class="text-4xl mr-4">✅</div>
+                            <h3 class="text-3xl font-bold text-green-400 orbitron">DO's</h3>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="rule-card glass-panel rounded-lg p-4 border-l-4 border-green-500">
+                                <p class="text-gray-200">✓ Register your team before the deadline</p>
+                            </div>
+                            <div class="rule-card glass-panel rounded-lg p-4 border-l-4 border-green-500">
+                                <p class="text-gray-200">✓ Form teams of 2-4 members only</p>
+                            </div>
+                            <div class="rule-card glass-panel rounded-lg p-4 border-l-4 border-green-500">
+                                <p class="text-gray-200">✓ Carry a valid college ID card</p>
+                            </div>
+                            <div class="rule-card glass-panel rounded-lg p-4 border-l-4 border-green-500">
+                                <p class="text-gray-200">✓ Keep your mobile phone charged</p>
+                            </div>
+                            <div class="rule-card glass-panel rounded-lg p-4 border-l-4 border-green-500">
+                                <p class="text-gray-200">✓ Follow all campus safety protocols</p>
+                            </div>
+                            <div class="rule-card glass-panel rounded-lg p-4 border-l-4 border-green-500">
+                                <p class="text-gray-200">✓ Respect campus property and fellow participants</p>
+                            </div>
+                            <div class="rule-card glass-panel rounded-lg p-4 border-l-4 border-green-500">
+                                <p class="text-gray-200">✓ Report to the starting point 15 minutes before</p>
+                            </div>
+                            <div class="rule-card glass-panel rounded-lg p-4 border-l-4 border-green-500">
+                                <p class="text-gray-200">✓ Work collaboratively with your team</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Don'ts -->
+                    <div class="glass-panel rounded-2xl p-8">
+                        <div class="flex items-center mb-6">
+                            <div class="text-4xl mr-4">⛔</div>
+                            <h3 class="text-3xl font-bold text-red-400 orbitron">DON'Ts</h3>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="rule-card glass-panel rounded-lg p-4 border-l-4 border-red-500">
+                                <p class="text-gray-200">✗ No copying clues from other teams</p>
+                            </div>
+                            <div class="rule-card glass-panel rounded-lg p-4 border-l-4 border-red-500">
+                                <p class="text-gray-200">✗ Don't damage or remove clue materials</p>
+                            </div>
+                            <div class="rule-card glass-panel rounded-lg p-4 border-l-4 border-red-500">
+                                <p class="text-gray-200">✗ No use of external help or internet searches</p>
+                            </div>
+                            <div class="rule-card glass-panel rounded-lg p-4 border-l-4 border-red-500">
+                                <p class="text-gray-200">✗ Don't enter restricted areas</p>
+                            </div>
+                            <div class="rule-card glass-panel rounded-lg p-4 border-l-4 border-red-500">
+                                <p class="text-gray-200">✗ No violence or aggressive behavior</p>
+                            </div>
+                            <div class="rule-card glass-panel rounded-lg p-4 border-l-4 border-red-500">
+                                <p class="text-gray-200">✗ Don't split up your team (stay together)</p>
+                            </div>
+                            <div class="rule-card glass-panel rounded-lg p-4 border-l-4 border-red-500">
+                                <p class="text-gray-200">✗ No sharing of answers with other teams</p>
+                            </div>
+                            <div class="rule-card glass-panel rounded-lg p-4 border-l-4 border-red-500">
+                                <p class="text-gray-200">✗ Don't argue with organizers or volunteers</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-8 border-2 border-yellow-500">
+                    <div class="flex items-start">
+                        <div class="text-4xl mr-4">⚠️</div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-yellow-400 mb-4 orbitron">Important Notes</h3>
+                            <ul class="space-y-2 text-gray-200">
+                                <li>• Organizers' decisions will be final and binding</li>
+                                <li>• Teams found cheating will be disqualified immediately</li>
+                                <li>• Time penalties may be applied for rule violations</li>
+                                <li>• The event may be modified or cancelled due to unforeseen circumstances</li>
+                                <li>• Participants are responsible for their personal belongings</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How to Play Section -->
+    <section id="how-to-play" class="py-20 px-4 bg-gradient-to-b from-purple-900/20 to-transparent">
+        <div class="container mx-auto max-w-6xl">
+            <div class="scroll-fade">
+                <h2 class="text-5xl md:text-6xl font-black orbitron text-center mb-12">
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-400">How to Play</span>
+                </h2>
+
+                <div class="glass-panel rounded-3xl p-8 md:p-12 mb-12">
+                    <h3 class="text-3xl font-bold text-purple-400 mb-8 text-center orbitron">Game Flow</h3>
+                    
+                    <div class="space-y-8 relative pl-12">
+                        <div class="timeline-item relative">
+                            <div class="glass-panel rounded-xl p-6">
+                                <div class="flex items-center mb-3">
+                                    <span class="bg-purple-600 text-white px-4 py-2 rounded-full font-bold orbitron mr-4">Step 1</span>
+                                    <h4 class="text-2xl font-bold text-purple-300">Registration & Check-In</h4>
+                                </div>
+                                <p class="text-gray-300">Register your team online and report to the starting point 15 minutes before the event. You'll receive your team ID and initial instructions.</p>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item relative">
+                            <div class="glass-panel rounded-xl p-6">
+                                <div class="flex items-center mb-3">
+                                    <span class="bg-pink-600 text-white px-4 py-2 rounded-full font-bold orbitron mr-4">Step 2</span>
+                                    <h4 class="text-2xl font-bold text-pink-300">Receive First Clue</h4>
+                                </div>
+                                <p class="text-gray-300">At the starting signal, each team receives their first cryptic clue. Decode it to discover your next location on campus.</p>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item relative">
+                            <div class="glass-panel rounded-xl p-6">
+                                <div class="flex items-center mb-3">
+                                    <span class="bg-purple-600 text-white px-4 py-2 rounded-full font-bold orbitron mr-4">Step 3</span>
+                                    <h4 class="text-2xl font-bold text-purple-300">Navigate Checkpoints</h4>
+                                </div>
+                                <p class="text-gray-300">Travel to each checkpoint marked on your clues. At each location, find the hidden marker and complete the challenge to unlock the next clue.</p>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item relative">
+                            <div class="glass-panel rounded-xl p-6">
+                                <div class="flex items-center mb-3">
+                                    <span class="bg-pink-600 text-white px-4 py-2 rounded-full font-bold orbitron mr-4">Step 4</span>
+                                    <h4 class="text-2xl font-bold text-pink-300">Solve Mirror Puzzles</h4>
+                                </div>
+                                <p class="text-gray-300">Each checkpoint features unique MIRROR-VERSE themed puzzles: reversed text, cipher codes, riddles, and reflection-based challenges.</p>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item relative">
+                            <div class="glass-panel rounded-xl p-6">
+                                <div class="flex items-center mb-3">
+                                    <span class="bg-purple-600 text-white px-4 py-2 rounded-full font-bold orbitron mr-4">Step 5</span>
+                                    <h4 class="text-2xl font-bold text-purple-300">Reach the Final Destination</h4>
+                                </div>
+                                <p class="text-gray-300">The final clue leads you to the treasure location. Be the first team to arrive and claim your victory!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div class="glass-panel rounded-xl p-6 text-center">
+                        <div class="text-5xl mb-4">🧩</div>
+                        <h4 class="text-xl font-bold text-purple-400 mb-3 orbitron">Puzzle Types</h4>
+                        <ul class="text-gray-300 space-y-2 text-sm">
+                            <li>• Mirror Writing</li>
+                            <li>• Caesar Ciphers</li>
+                            <li>• Riddles & Wordplay</li>
+                            <li>• Visual Puzzles</li>
+                            <li>• Number Codes</li>
+                        </ul>
+                    </div>
+
+                    <div class="glass-panel rounded-xl p-6 text-center">
+                        <div class="text-5xl mb-4">📱</div>
+                        <h4 class="text-xl font-bold text-pink-400 mb-3 orbitron">What to Bring</h4>
+                        <ul class="text-gray-300 space-y-2 text-sm">
+                            <li>• Smartphone (charged)</li>
+                            <li>• College ID Card</li>
+                            <li>• Pen & Notebook</li>
+                            <li>• Water Bottle</li>
+                            <li>• Enthusiasm!</li>
+                        </ul>
+                    </div>
+
+                    <div class="glass-panel rounded-xl p-6 text-center">
+                        <div class="text-5xl mb-4">🎯</div>
+                        <h4 class="text-xl font-bold text-purple-400 mb-3 orbitron">Scoring System</h4>
+                        <ul class="text-gray-300 space-y-2 text-sm">
+                            <li>• Speed Bonus Points</li>
+                            <li>• Puzzle Accuracy</li>
+                            <li>• Checkpoint Completion</li>
+                            <li>• Time Penalties for Hints</li>
+                            <li>• Final Time Ranking</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Prizes Section -->
+    <section id="prizes" class="py-20 px-4">
+        <div class="container mx-auto max-w-6xl">
+            <div class="scroll-fade">
+                <h2 class="text-5xl md:text-6xl font-black orbitron text-center mb-12">
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-400">Prizes & Rewards</span>
+                </h2>
+
+                <div class="grid md:grid-cols-3 gap-8 mb-12">
+                    <div class="glass-panel rounded-2xl p-8 text-center border-2 border-yellow-500 pulse-glow transform hover:scale-105 transition-all">
+                        <div class="text-6xl mb-4">🥇</div>
+                        <h3 class="text-3xl font-bold text-yellow-400 mb-4 orbitron">1st Place</h3>
+                        <p class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-yellow-600 mb-4">₹5,000</p>
+                        <p class="text-gray-300">+ Trophy + Certificates</p>
+                    </div>
+
+                    <div class="glass-panel rounded-2xl p-8 text-center border-2 border-gray-400 pulse-glow transform hover:scale-105 transition-all" style="animation-delay: 0.2s;">
+                        <div class="text-6xl mb-4">🥈</div>
+                        <h3 class="text-3xl font-bold text-gray-300 mb-4 orbitron">2nd Place</h3>
+                        <p class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-gray-300 to-gray-500 mb-4">₹3,000</p>
+                        <p class="text-gray-300">+ Trophy + Certificates</p>
+                    </div>
+
+                    <div class="glass-panel rounded-2xl p-8 text-center border-2 border-orange-600 pulse-glow transform hover:scale-105 transition-all" style="animation-delay: 0.4s;">
+                        <div class="text-6xl mb-4">🥉</div>
+                        <h3 class="text-3xl font-bold text-orange-400 mb-4 orbitron">3rd Place</h3>
+                        <p class="text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-600 mb-4">₹2,000</p>
+                        <p class="text-gray-300">+ Trophy + Certificates</p>
+                    </div>
+                </div>
+
+                <div class="glass-panel rounded-2xl p-8">
+                    <h3 class="text-2xl font-bold text-purple-400 mb-6 text-center orbitron">Special Awards</h3>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div class="glass-panel rounded-xl p-6 border-l-4 border-purple-500">
+                            <div class="flex items-center mb-3">
+                                <div class="text-3xl mr-3">🧠</div>
+                                <h4 class="text-xl font-bold text-purple-300">Best Puzzle Solver</h4>
+                            </div>
+                            <p class="text-gray-300">Awarded to the team with highest puzzle accuracy</p>
+                        </div>
+                        <div class="glass-panel rounded-xl p-6 border-l-4 border-pink-500">
+                            <div class="flex items-center mb-3">
+                                <div class="text-3xl mr-3">⚡</div>
+                                <h4 class="text-xl font-bold text-pink-300">Speed Demons</h4>
+                            </div>
+                            <p class="text-gray-300">Fastest team to complete first 3 checkpoints</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8 bg-gradient-to-r from-purple-900/50 to-pink-900/50 rounded-2xl p-6 text-center border border-purple-500">
+                    <p class="text-xl text-purple-200">
+                        🎁 All participants receive <strong>certificates of participation</strong> and exclusive IGNITE merchandise!
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Registration Section -->
+    <section id="register" class="py-20 px-4 bg-gradient-to-b from-purple-900/20 to-transparent">
+        <div class="container mx-auto max-w-4xl">
+            <div class="scroll-fade">
+                <h2 class="text-5xl md:text-6xl font-black orbitron text-center mb-12">
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">Register Now</span>
+                </h2>
+
+                <div class="glass-panel rounded-3xl p-8 md:p-12">
+                    <div class="text-center mb-8">
+                        <div class="inline-block bg-gradient-to-r from-purple-600 to-pink-600 rounded-full px-6 py-2 mb-6">
+                            <p class="text-white font-bold orbitron">Limited Slots Available!</p>
+                        </div>
+                        <p class="text-2xl text-gray-200 mb-2">Entry Fee: <span class="text-purple-400 font-bold">₹50 per team</span></p>
+                        <p class="text-gray-400">Team Size: 2-4 members</p>
+                    </div>
+
+                    <div class="space-y-6 mb-8">
+                        <div class="glass-panel rounded-xl p-6">
+                            <h3 class="text-xl font-bold text-purple-400 mb-4 orbitron">Registration Steps:</h3>
+                            <ol class="space-y-3 text-gray-200">
+                                <li class="flex items-start">
+                                    <span class="text-pink-400 font-bold mr-3">1.</span>
+                                    <span>Click the registration link below</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-pink-400 font-bold mr-3">2.</span>
+                                    <span>Fill in your team details (team name, member names, contact info)</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-pink-400 font-bold mr-3">3.</span>
+                                    <span>Pay the registration fee via the payment link</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-pink-400 font-bold mr-3">4.</span>
+                                    <span>Receive confirmation email with event details</span>
+                                </li>
+                                <li class="flex items-start">
+                                    <span class="text-pink-400 font-bold mr-3">5.</span>
+                                    <span>Report to the venue on event day!</span>
+                                </li>
+                            </ol>
+                        </div>
+
+                        <div class="bg-yellow-500/10 border-2 border-yellow-500 rounded-xl p-6">
+                            <p class="text-yellow-300 text-center">
+                                ⏰ <strong>Registration Deadline:</strong> TBA | <strong>Max Teams:</strong> 50
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <a href="#" class="btn-mirror inline-block bg-gradient-to-r from-purple-600 to-pink-600 text-white px-12 py-5 rounded-xl text-xl font-bold orbitron mb-4">
+                            🎯 Register Your Team
+                        </a>
+                        <p class="text-gray-400 text-sm">Click to open registration form</p>
+                    </div>
+
+                    <div class="mt-8 grid md:grid-cols-2 gap-6">
+                        <div class="glass-panel rounded-xl p-6">
+                            <h4 class="text-lg font-bold text-purple-400 mb-3 orbitron">📧 Contact Us</h4>
+                            <p class="text-gray-300 mb-2">Email: ignite@college.edu</p>
+                            <p class="text-gray-300">Phone: +91 XXXXX XXXXX</p>
+                        </div>
+                        <div class="glass-panel rounded-xl p-6">
+                            <h4 class="text-lg font-bold text-pink-400 mb-3 orbitron">🔗 Connect With Us</h4>
+                            <div class="flex space-x-4">
+                                <a href="#" class="text-gray-300 hover:text-purple-400 transition">Instagram</a>
+                                <a href="#" class="text-gray-300 hover:text-pink-400 transition">Facebook</a>
+                                <a href="#" class="text-gray-300 hover:text-purple-400 transition">Twitter</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 px-4 border-t border-gray-800">
+        <div class="container mx-auto text-center">
+            <div class="mb-4">
+                <h3 class="text-3xl font-bold orbitron">
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">IGNITE 2024</span>
+                </h3>
+                <p class="text-gray-400 mt-2 mirror-text">ESREV-RORRIM</p>
+            </div>
+            <p class="text-gray-500">&copy; 2024 IGNITE. All rights reserved.</p>
+            <p class="text-gray-600 text-sm mt-2">Where reflections reveal reality</p>
+        </div>
+    </footer>
+
+    <script>
+        // Mobile menu toggle
+        function toggleMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                    // Close mobile menu if open
+                    document.getElementById('mobile-menu').classList.add('hidden');
+                }
+            });
+        });
+
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.scroll-fade').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Parallax effect on hero
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const hero = document.querySelector('.float');
+            if (hero) {
+                hero.style.transform = `translateY(${scrolled * 0.5}px)`;
+            }
+        });
+    </script>
+</body>
+</html>
